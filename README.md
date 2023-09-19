@@ -8,15 +8,19 @@ Don't include --no-cache if you want to use cache and build quicker.
 """
 docker build --no-cache -t andrew-alpha <path to Dockerfile>
 """
-Tag the docker image with the tag indicating the version of the app
+Tag the docker image with the tag indicating the version of the app.
 """
-docker tag andrew-alpha gcmarais/andrew-alpha:latest
+docker tag andrew-alpha <docker_username>/andrew-alpha:latest
 """
 Push the docker image to dockerhub to be pulled by users.
 """
 docker push <docker_username>/andrew-alpha:latest
 """
-To run the docker image on any machine
+Pull the docker iamge to the local machine.
 """
-docker run -it -p 8000:8000 andrew-alpha
+docker pull <docker_username>/andrew-alpha:latest
+"""
+To run the docker image on any machine.
+"""
+docker run -it -p 7860:7860 --name andrew-alpha-container <docker_username>/andrew-alpha:latest
 """
