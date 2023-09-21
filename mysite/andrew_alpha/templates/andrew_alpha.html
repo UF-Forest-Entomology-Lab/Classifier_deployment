@@ -1,2 +1,35 @@
 <!-- # andrew_alpha.html -->
-<h1>Hello, World! This is Andrew Alpha speaking... beep boop!</h1>
+<!-- <h1>Hello, World! This is Andrew Alpha speaking... beep boop!</h1> -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Webcam Example</title>
+  </head>
+  <body>
+    <h1>Hello, World! This is Andrew Alpha speaking... beep boop!</h1>
+    <h1>Webcam Example</h1>
+    <video id="videoElement" autoplay></video>
+
+    <script>
+      // Get the video element
+      const video = document.getElementById("videoElement");
+
+      // Check if the browser supports getUserMedia
+      if (navigator.mediaDevices.getUserMedia) {
+        // Request access to the webcam
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(function (stream) {
+            // Set the video source to the stream from the webcam
+            video.srcObject = stream;
+          })
+          .catch(function (error) {
+            console.error("Error accessing the webcam:", error);
+          });
+      } else {
+        console.error("getUserMedia is not supported by this browser");
+      }
+    </script>
+  </body>
+</html>
