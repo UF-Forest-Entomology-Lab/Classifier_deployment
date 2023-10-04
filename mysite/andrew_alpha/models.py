@@ -1,3 +1,5 @@
 from django.db import models
 
-# Create your models here.
+
+# class Property(models.Model):
+#     prop_images = models.ImageField(upload_to="prop_images")

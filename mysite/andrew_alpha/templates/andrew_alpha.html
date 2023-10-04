@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -6,101 +7,16 @@
   <body>
     <h1>Andrew Alpha Beep Boop ...</h1>
     <video id="videoElement" autoplay></video>
+    
     <button id="captureButton">Capture Frame</button>
     <button id="uploadButton">Upload Image</button>
-    <div id="capturedFrame"></div>
 
-    <script>
-      // Get the video element
-      const video = document.getElementById("videoElement");
-      const captureButton = document.getElementById("captureButton");
-      const uploadButton = document.getElementById("uploadButton");
-      const capturedFrame = document.getElementById("capturedFrame");
+    <form id="myForm">  
+      <div id="capturedFrame", type="file"></div>
+    </form>
 
-      // Check if the browser supports getUserMedia
-      if (navigator.mediaDevices.getUserMedia) {
-        // Request access to the webcam
-        navigator.mediaDevices
-          .getUserMedia({ video: true })
-          .then(function (stream) {
-            // Set the video source to the stream from the webcam
-            video.srcObject = stream;
-          })
-          .catch(function (error) {
-            console.error("Error accessing the webcam:", error);
-            const message = document.createElement("p");
-            message.textContent = "No webcam detected";
-            document.body.appendChild(message);
-          });
-      } else {
-        console.error("getUserMedia is not supported by this browser");
-      }
+    <!-- <div id="capturedFrame"></div> -->
 
-      let latestFrameURL; // Variable to store the URL of the latest captured frame
-
-      // Add event listener to capture button
-      captureButton.addEventListener("click", function () {
-        // Create a canvas element
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-
-        // Set canvas dimensions to match video dimensions
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        // Draw current frame from video onto canvas
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Convert canvas image to data URL
-        const dataURL = canvas.toDataURL();
-
-        // Store the URL of the latest captured frame
-        latestFrameURL = dataURL;
-
-        // Remove previously displayed captured frame (if any)
-        while (capturedFrame.firstChild) {
-          capturedFrame.firstChild.remove();
-        }
-
-        // Create an image element for displaying captured frame
-        const capturedImage = document.createElement("img");
-        capturedImage.src = latestFrameURL;
-
-        // Append captured image to captured frame div
-        capturedFrame.appendChild(capturedImage);
-      });
-
-      // Add event listener to upload button
-      uploadButton.addEventListener("click", function () {
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-
-        fileInput.addEventListener("change", function () {
-          const fileReader = new FileReader();
-
-          fileReader.addEventListener("load", function () {
-            const uploadedImageURL = fileReader.result;
-
-            // Remove previously displayed captured frame (if any)
-            while (capturedFrame.firstChild) {
-              capturedFrame.firstChild.remove();
-            }
-
-            // Create an image element for displaying uploaded image
-            const uploadedImage = document.createElement("img");
-            uploadedImage.src = uploadedImageURL;
-
-            // Append uploaded image to captured frame div
-            capturedFrame.appendChild(uploadedImage);
-          });
-
-          if (fileInput.files.length > 0) {
-            fileReader.readAsDataURL(fileInput.files[0]);
-          }
-        });
-
-        fileInput.click();
-      });
-    </script>
+    <script src="{% static 'andrew_alpha.js' %}"></script>
   </body>
 </html>
