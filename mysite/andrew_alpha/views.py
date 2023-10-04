@@ -1,3 +1,5 @@
+import base64
+import hashlib
 from io import BytesIO
 from django.shortcuts import render
 from PIL import Image
@@ -13,32 +15,38 @@ def andrew_alpha(request):
 
 @csrf_exempt
 def upload_image(request):
+
     if request.method == 'POST':
-        # Get uploaded file from request.FILES dictionary
-        print(request.FILES.keys())
-        # print(request.FILES['img'])
-        uploaded_file = request.FILES['image'].read()
 
-        # Process uploaded file here
-        # Convert the image data to a PIL.Image object
-        with BytesIO(uploaded_file) as f:
-            img = Image.open(f)
+        # Get uploaded file data
+        image_data = request.FILES['image'].read()
 
-        # Process the image using PIL
-        img = img.rotate(90)
+        # Open image and make a copy to avoid read-after-close error
+        img = Image.open(BytesIO(image_data))
+        processed_img = img.copy()
 
-        # Save the processed image to disk
-        img.save('image.jpg')
+        # hash the image for a unique name
+        md5hash = hashlib.md5(processed_img.tobytes())
+        processed_img.save(f"./saved_images/{md5hash.hexdigest()}.png")
 
-        # Convert the processed image back to a format that can be sent 
-        # back to the client
-        with BytesIO() as f:
-            img.save(f, 'JPEG')
-            response_data = f.getvalue()
+        # Process image
+        processed_img = processed_img.rotate(90)
 
-        # Send the processed image back to the client
-        return JsonResponse({
-            "Message": "File Uploaded Successfully",
-            'processed_image': response_data})
+        # Save processed image to BytesIO object to get bytes
+        with BytesIO() as output:
+            processed_img.save(output, format='JPEG')
+            processed_img_data = output.getvalue()
 
-    return JsonResponse({"Message": ""})
+        # Return processed image data back
+        response = JsonResponse({
+            "message": "Image processed successfully",
+            "processed_image": base64.b64encode(
+                processed_img_data
+                ).decode('utf-8')
+        })
+
+        response['Access-Control-Allow-Origin'] = '*'
+
+        return response
+
+    return JsonResponse({"message": "No image received"})

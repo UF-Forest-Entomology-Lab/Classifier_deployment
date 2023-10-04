@@ -20,6 +20,7 @@ const video = document.getElementById("videoElement");
 const captureButton = document.getElementById("captureButton");
 const uploadButton = document.getElementById("uploadButton");
 const capturedFrame = document.getElementById("capturedFrame");
+const processedFrame = document.getElementById("processedFrame");
 // Get CSRF token from cookie
 const csrftoken = getCookie('csrftoken');
 // Get reference to form
@@ -135,15 +136,10 @@ uploadButton.addEventListener("click", function () {
       const uploadedImage = document.createElement("img");
       uploadedImage.src = uploadedImageURL;
 
-        ///////////////////
-        // Download image when clicking on capture frame
-        // // Create a new anchor element with the URL
-        // const anchorElement = document.createElement('a');
-        // anchorElement.href = dataURL;
-        // anchorElement.download = 'image.png';
-        // // Click the anchor element to download the file
-        // anchorElement.click();
+      // Display processed image
+      const processedImage = document.createElement('img');
 
+        ///////////////////
         const imageFile = fileInput.files[0];
         let formData = new FormData();
         formData.append('image', imageFile);
@@ -155,9 +151,31 @@ uploadButton.addEventListener("click", function () {
         .then(response => {
           console.log('Success!');
         })
+        .then(response => response.json())
+        .then(data => {
+
+          // Get base64 encoded image data
+          const processedImgData = data.processed_image;
+          console.log(processedImgData);
+
+          // Decode base64 data to bytes
+          const bytes = Uint8Array.from(atob(processedImgData), c => c.charCodeAt(0));
+          console.log(bytes);
+        
+          // Create blob from bytes
+          const blob = new Blob([bytes], {type: 'image/jpeg'}); 
+        
+          // Create image URL from blob
+          const processedImageURL = URL.createObjectURL(blob);
+        
+          processedImage.src = processedImageURL;
+        
+        })
         .catch(error => {
           console.error('Error uploading image');
         });
+
+        processedFrame.appendChild(processedImage);
         
         ///////////////////
 
