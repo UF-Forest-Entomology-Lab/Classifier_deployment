@@ -46,7 +46,6 @@ if (navigator.mediaDevices.getUserMedia) {
   console.error("getUserMedia is not supported by this browser");
 }
 
-/////////////////////////////////
 
 // Variable to store latest captured frame URL
 let latestFrameURL;
@@ -118,15 +117,15 @@ captureButton.addEventListener("click", function() {
         const img = document.createElement('img');
         img.src = URL.createObjectURL(blob);
 
-        // // Replace original image with processed one
-        // while (capturedFrame.firstChild) {
-        //   capturedFrame.firstChild.remove();
-        // }
-        // document.getElementById('capturedFrame').appendChild(img);
+        // Replace original image with processed one
+        while (capturedFrame.firstChild) {
+          capturedFrame.firstChild.remove();
+        }
+        document.getElementById('capturedFrame').appendChild(img);
 
         // Display processed image
         // Append to DOM
-        document.getElementById('processedFrame').appendChild(img);
+        // document.getElementById('processedFrame').appendChild(img);
       
       })
       .catch(error => {
@@ -140,9 +139,6 @@ captureButton.addEventListener("click", function() {
   }
 
 });
-
-
-  /////////////////////////////////
 
 // Add event listener to upload button
 uploadButton.addEventListener("click", function () {
@@ -182,15 +178,15 @@ uploadButton.addEventListener("click", function () {
         const img = document.createElement('img');
         img.src = URL.createObjectURL(blob);
 
-        // // Replace original image with processed one
-        // while (capturedFrame.firstChild) {
-        //   capturedFrame.firstChild.remove();
-        // }
-        // document.getElementById('capturedFrame').appendChild(img);
+        // Replace original image with processed one
+        while (capturedFrame.firstChild) {
+          capturedFrame.firstChild.remove();
+        }
+        document.getElementById('capturedFrame').appendChild(img);
 
         // Display processed image
         // Append to DOM
-        document.getElementById('processedFrame').appendChild(img);
+        // document.getElementById('processedFrame').appendChild(img);
       
       })
       .catch(error => {
