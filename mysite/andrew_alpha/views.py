@@ -1,9 +1,9 @@
-import base64
+# import base64
 import hashlib
 from io import BytesIO
 from django.shortcuts import render
 from PIL import Image
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, HttpResponse
 
 # from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
@@ -14,10 +14,9 @@ def andrew_alpha(request):
 
 
 @csrf_exempt
-def upload_image(request):
+def process_image(request):
 
     if request.method == 'POST':
-
         # Get uploaded file data
         image_data = request.FILES['image'].read()
 
@@ -28,26 +27,39 @@ def upload_image(request):
 
         # hash the image for a unique name
         md5hash = hashlib.md5(processed_img.tobytes())
-        processed_img.save(f"./submitted_images/{md5hash.hexdigest()}.png")
+        image_path = f"./andrew_alpha/submitted_images/{md5hash.hexdigest()}.png"
+
+        # save uploaded image
+        processed_img.save(image_path)
 
         # Process image
-        processed_img = processed_img.rotate(90)
+        processed_img = processed_img.rotate(180)
 
-        # Save processed image to BytesIO object to get bytes
-        with BytesIO() as output:
-            processed_img.save(output, format='JPEG')
-            processed_img_data = output.getvalue()
+        # # save processed image
+        # processed_img_path = f"./andrew_alpha/processed_images/{md5hash.hexdigest()}.png"
+        # processed_img.save(processed_img_path)
+
+        # # convert to base64
+        # processed_img_base64 = base64.b64encode(
+        #         processed_img.tobytes()
+        #         ).decode('utf-8')
 
         # Return processed image data back
-        response = JsonResponse({
-            "message": "Image processed successfully",
-            "processed_image": base64.b64encode(
-                processed_img_data
-                ).decode('utf-8')
-        })
+        # response = JsonResponse({
+        #     "message": "Image processed successfully",
+        #     "processed_image": processed_img_base64
+        # })
+        # response = FileResponse(open(processed_img_path, 'rb'))
 
-        response['Access-Control-Allow-Origin'] = '*'
+        # Cross-Origin Resource Sharing (CORS)
+        # response['Access-Control-Allow-Origin'] = '*'
 
-        return response
+        # return response
+
+        # Save processed image to BytesIO in memory
+        buffer = BytesIO()
+        processed_img.save(buffer, 'JPEG')
+        img_data = buffer.getvalue()
+        return HttpResponse(img_data, content_type='image/jpeg')
 
     return JsonResponse({"message": "No image received"})

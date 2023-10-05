@@ -20,6 +20,7 @@ const video = document.getElementById("videoElement");
 const captureButton = document.getElementById("captureButton");
 const uploadButton = document.getElementById("uploadButton");
 const capturedFrame = document.getElementById("capturedFrame");
+const webcamFeed = document.getElementById("webcamFeed");
 const processedFrame = document.getElementById("processedFrame");
 // Get CSRF token from cookie
 const csrftoken = getCookie('csrftoken');
@@ -38,7 +39,7 @@ if (navigator.mediaDevices.getUserMedia) {
     .catch(function (error) {
       console.error("Error accessing the webcam:", error);
       const message = document.createElement("p");
-      message.textContent = "No webcam detected";
+      webcamFeed.innerHTML = "No webcam detected.";
       document.body.appendChild(message);
     });
 } else {
@@ -93,7 +94,7 @@ captureButton.addEventListener("click", function () {
   headers.append('X-CSRFToken', csrftoken);
 
   // Send FormData
-  fetch('/upload_image/', {
+  fetch('/process_image/', {
     method: 'POST',
     headers: headers,
     body: formData
@@ -102,7 +103,7 @@ captureButton.addEventListener("click", function () {
 
   // // Send FormData object to server using XMLHttpRequest
   // const xhr = new XMLHttpRequest();
-  // xhr.open('POST', '/upload_image/');
+  // xhr.open('POST', '/process_image/');
 
   // // Add CSRF token to request headers
   // xhr.setRequestHeader('X-CSRFToken', csrftoken);
@@ -144,38 +145,52 @@ uploadButton.addEventListener("click", function () {
         let formData = new FormData();
         formData.append('image', imageFile);
 
-        fetch('/upload_image/', {
+        fetch('/process_image/', {
           method: 'POST',
           body: formData
         })
-        .then(response => {
-          console.log('Success!');
-        })
-        .then(response => response.json())
-        .then(data => {
+        // .then(response => {
+        //   console.log('Success!');
+        // })
+        .then(response => response.blob())
+        // .then(data => {
 
-          // Get base64 encoded image data
-          const processedImgData = data.processed_image;
-          console.log(processedImgData);
+        //   // Get base64 encoded image data
+        //   const processedImgData = data.processed_image;
+        //   console.log(processedImgData);
 
-          // Decode base64 data to bytes
-          const bytes = Uint8Array.from(atob(processedImgData), c => c.charCodeAt(0));
-          console.log(bytes);
+        //   // Decode base64 data to bytes
+        //   const bytes = Uint8Array.from(atob(processedImgData), c => c.charCodeAt(0));
+        //   console.log(bytes);
         
-          // Create blob from bytes
-          const blob = new Blob([bytes], {type: 'image/jpeg'}); 
+        //   // Create blob from bytes
+        //   const blob = new Blob([bytes], {type: 'image/jpeg'}); 
         
-          // Create image URL from blob
-          const processedImageURL = URL.createObjectURL(blob);
+        //   // Create image URL from blob
+        //   const processedImageURL = URL.createObjectURL(blob);
         
-          processedImage.src = processedImageURL;
+        //   processedImage.src = processedImageURL;
+        
+        // })
+        // .then(blob => {
+        //   const img = document.getElementById('processed-image');
+        //   img.src = URL.createObjectURL(blob);
+        // })
+        .then(blob => {
+
+          // Create image from blob
+          const img = document.createElement('img');
+          img.src = URL.createObjectURL(blob);
+        
+          // Append to DOM
+          document.getElementById('processedFrame').appendChild(img);
         
         })
         .catch(error => {
-          console.error('Error uploading image');
+          console.error('Error processing image');
         });
 
-        processedFrame.appendChild(processedImage);
+        // processedFrame.appendChild(processedImage);
         
         ///////////////////
 

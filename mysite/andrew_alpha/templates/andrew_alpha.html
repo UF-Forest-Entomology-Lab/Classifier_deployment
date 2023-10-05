@@ -7,7 +7,7 @@
   <body>
     <h1>Andrew Alpha Beep Boop ...</h1>
     <video id="videoElement" autoplay></video>
-    
+    <div id="webcamFeed"></div>
     <button id="captureButton">Capture Frame</button>
     <button id="uploadButton">Upload Image</button>
 
@@ -15,7 +15,9 @@
       <div id="capturedFrame", type="file"></div>
     </form>
 
-    <div id="processedFrame", type="file"></div>
+    <!-- <div id="processedFrame", type="file"></div> -->
+    <img src="/process_image/" id="processed-image">
+    <div id="processedFrame"></div>
 
     <script src="{% static 'andrew_alpha.js' %}"></script>
   </body>
