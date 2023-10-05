@@ -46,76 +46,75 @@ if (navigator.mediaDevices.getUserMedia) {
   console.error("getUserMedia is not supported by this browser");
 }
 
-let latestFrameURL; // Variable to store the URL of the latest captured frame
+/////////////////////////////////
 
-// Add event listener to capture button
-captureButton.addEventListener("click", function () {
-  // Create a canvas element
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
+// Variable to store latest captured frame URL
+let latestFrameURL;
 
-  // Set canvas dimensions to match video dimensions
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-
-  // Draw current frame from video onto canvas
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  // Convert canvas image to data URL
-  const dataURL = canvas.toDataURL("image/png");
+// Add click handler to capture button
+captureButton.addEventListener("click", function() {
 
   // Remove previously displayed captured frame (if any)
   while (capturedFrame.firstChild) {
     capturedFrame.firstChild.remove();
   }
 
-  // Create an image element for displaying captured frame
+  // Clear processed image display
+  while (processedFrame.firstChild) {
+    processedFrame.firstChild.remove();
+  }
+
+  // Create canvas element 
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  // Set canvas dimensions to match video
+  canvas.width = video.videoWidth; 
+  canvas.height = video.videoHeight;
+
+  // Draw current video frame to canvas
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Convert canvas to data URL
+  const dataURL = canvas.toDataURL("image/png");
+
+  // Save data URL to reuse when appending to form
+  latestFrameURL = dataURL;
+
+  // Remove any previously captured frames
+  while (capturedFrame.firstChild) {
+    capturedFrame.firstChild.remove();
+  }
+
+  // Create img element for captured frame
   const capturedImage = document.createElement("img");
   capturedImage.src = dataURL;
 
+  // Append to captured frame div
+  capturedFrame.appendChild(capturedImage);
 
-  ///////////////////
-  // Download image when clicking on capture frame
-  // // Create a new anchor element with the URL
-  // const anchorElement = document.createElement('a');
-  // anchorElement.href = dataURL;
-  // anchorElement.download = 'image.png';
+  // Create FormData object
+  const formData = new FormData();
 
-  // // Click the anchor element to download the file
-  // anchorElement.click();
+  // Append image data to FormData
+  formData.append('image', latestFrameURL);
 
-  // Append image data to FormData object
-  const formData = new FormData(form);
-  // formData.append('image', latestFrameURL);
-
-  // csrf for fetch approach
-  // Create headers with token
+  // Create headers with CSRF token
   const headers = new Headers();
   headers.append('X-CSRFToken', csrftoken);
 
-  // Send FormData
-  fetch('/process_image/', {
+  // Send FormData to server
+  fetch('/process_webcam_image/', {
     method: 'POST',
     headers: headers,
     body: formData
   });
-  
 
-  // // Send FormData object to server using XMLHttpRequest
-  // const xhr = new XMLHttpRequest();
-  // xhr.open('POST', '/process_image/');
-
-  // // Add CSRF token to request headers
-  // xhr.setRequestHeader('X-CSRFToken', csrftoken);
-
-  // // send data
-  // xhr.send(formData);
-
-  ///////////////////
-
-  // Append captured image to captured frame div
-  capturedFrame.appendChild(capturedImage);
 });
+
+
+
+  /////////////////////////////////
 
 // Add event listener to upload button
 uploadButton.addEventListener("click", function () {
@@ -132,70 +131,48 @@ uploadButton.addEventListener("click", function () {
       while (capturedFrame.firstChild) {
         capturedFrame.firstChild.remove();
       }
+      // Clear processed image display
+      while (processedFrame.firstChild) {
+        processedFrame.firstChild.remove();
+      }
 
       // Create an image element for displaying uploaded image
       const uploadedImage = document.createElement("img");
       uploadedImage.src = uploadedImageURL;
+      const imageFile = fileInput.files[0];
+      let formData = new FormData();
+      formData.append('image', imageFile);
 
-      // Display processed image
-      const processedImage = document.createElement('img');
+      fetch('/process_uploaded_image/', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.blob())
+      .then(blob => {
 
-        ///////////////////
-        const imageFile = fileInput.files[0];
-        let formData = new FormData();
-        formData.append('image', imageFile);
+        // Create image from blob
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(blob);
 
-        fetch('/process_image/', {
-          method: 'POST',
-          body: formData
-        })
-        // .then(response => {
-        //   console.log('Success!');
-        // })
-        .then(response => response.blob())
-        // .then(data => {
+        // // Replace original image with processed one
+        // while (capturedFrame.firstChild) {
+        //   capturedFrame.firstChild.remove();
+        // }
+        // document.getElementById('capturedFrame').appendChild(img);
 
-        //   // Get base64 encoded image data
-        //   const processedImgData = data.processed_image;
-        //   console.log(processedImgData);
+        // Display processed image
+        // Append to DOM
+        document.getElementById('processedFrame').appendChild(img);
+      
+      })
+      .catch(error => {
+        console.error('Error processing image');
+      });
 
-        //   // Decode base64 data to bytes
-        //   const bytes = Uint8Array.from(atob(processedImgData), c => c.charCodeAt(0));
-        //   console.log(bytes);
-        
-        //   // Create blob from bytes
-        //   const blob = new Blob([bytes], {type: 'image/jpeg'}); 
-        
-        //   // Create image URL from blob
-        //   const processedImageURL = URL.createObjectURL(blob);
-        
-        //   processedImage.src = processedImageURL;
-        
-        // })
-        // .then(blob => {
-        //   const img = document.getElementById('processed-image');
-        //   img.src = URL.createObjectURL(blob);
-        // })
-        .then(blob => {
-
-          // Create image from blob
-          const img = document.createElement('img');
-          img.src = URL.createObjectURL(blob);
-        
-          // Append to DOM
-          document.getElementById('processedFrame').appendChild(img);
-        
-        })
-        .catch(error => {
-          console.error('Error processing image');
-        });
-
-        // processedFrame.appendChild(processedImage);
-        
-        ///////////////////
 
       // Append uploaded image to captured frame div
       capturedFrame.appendChild(uploadedImage);
+      
     });
 
     if (fileInput.files.length > 0) {

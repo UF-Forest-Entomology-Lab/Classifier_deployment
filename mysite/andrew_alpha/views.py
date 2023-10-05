@@ -3,7 +3,7 @@ import hashlib
 from io import BytesIO
 from django.shortcuts import render
 from PIL import Image
-from django.http import JsonResponse, FileResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse
 
 # from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
@@ -14,7 +14,19 @@ def andrew_alpha(request):
 
 
 @csrf_exempt
-def process_image(request):
+def process_webcam_image(request):
+
+    if request.method == "POST":
+        image_file = request.FILES["image"]
+        # do some processing with the image file
+        # for example, save it to a model or send it to an API
+        # return a response with the processed image or some other data
+        return HttpResponse("OK")
+
+    return JsonResponse({"message": "No image received"})
+
+@csrf_exempt
+def process_uploaded_image(request):
 
     if request.method == 'POST':
         # Get uploaded file data
@@ -34,27 +46,6 @@ def process_image(request):
 
         # Process image
         processed_img = processed_img.rotate(180)
-
-        # # save processed image
-        # processed_img_path = f"./andrew_alpha/processed_images/{md5hash.hexdigest()}.png"
-        # processed_img.save(processed_img_path)
-
-        # # convert to base64
-        # processed_img_base64 = base64.b64encode(
-        #         processed_img.tobytes()
-        #         ).decode('utf-8')
-
-        # Return processed image data back
-        # response = JsonResponse({
-        #     "message": "Image processed successfully",
-        #     "processed_image": processed_img_base64
-        # })
-        # response = FileResponse(open(processed_img_path, 'rb'))
-
-        # Cross-Origin Resource Sharing (CORS)
-        # response['Access-Control-Allow-Origin'] = '*'
-
-        # return response
 
         # Save processed image to BytesIO in memory
         buffer = BytesIO()
