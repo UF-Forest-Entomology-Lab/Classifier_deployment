@@ -81,37 +81,65 @@ captureButton.addEventListener("click", function() {
   // Save data URL to reuse when appending to form
   latestFrameURL = dataURL;
 
-  // Remove any previously captured frames
-  while (capturedFrame.firstChild) {
-    capturedFrame.firstChild.remove();
-  }
-
   // Create img element for captured frame
   const capturedImage = document.createElement("img");
-  capturedImage.src = dataURL;
+  capturedImage.src = latestFrameURL;
 
   // Append to captured frame div
   capturedFrame.appendChild(capturedImage);
+  if (canvas) {
 
-  // Create FormData object
-  const formData = new FormData();
+    // Convert canvas to blob
+    canvas.toBlob(function(blob) {
 
-  // Append image data to FormData
-  formData.append('image', latestFrameURL);
+      // Create file from blob
+      const file = new File([blob], 'capturedImage.jpg', {type: 'image/jpeg'})
 
-  // Create headers with CSRF token
-  const headers = new Headers();
-  headers.append('X-CSRFToken', csrftoken);
+      // Create FormData
+      const formData = new FormData();
 
-  // Send FormData to server
-  fetch('/process_webcam_image/', {
-    method: 'POST',
-    headers: headers,
-    body: formData
-  });
+      // Append file 
+      formData.append('image', file);
+
+      // Headers with token
+      const headers = new Headers();
+      headers.append('X-CSRFToken', csrftoken);
+
+      // Send FormData
+      fetch('/process_uploaded_image/', {
+        method: 'POST',
+        headers: headers,
+        body: formData
+      })
+      .then(response => response.blob())
+      .then(blob => {
+
+        // Create image from blob
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(blob);
+
+        // // Replace original image with processed one
+        // while (capturedFrame.firstChild) {
+        //   capturedFrame.firstChild.remove();
+        // }
+        // document.getElementById('capturedFrame').appendChild(img);
+
+        // Display processed image
+        // Append to DOM
+        document.getElementById('processedFrame').appendChild(img);
+      
+      })
+      .catch(error => {
+        console.error('Error processing image'); 
+      });
+
+    }, 'image/jpeg');
+
+  } else {
+    console.error("Canvas not found"); 
+  }
 
 });
-
 
 
   /////////////////////////////////

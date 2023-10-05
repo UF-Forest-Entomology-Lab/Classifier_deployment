@@ -14,18 +14,6 @@ def andrew_alpha(request):
 
 
 @csrf_exempt
-def process_webcam_image(request):
-
-    if request.method == "POST":
-        image_file = request.FILES["image"]
-        # do some processing with the image file
-        # for example, save it to a model or send it to an API
-        # return a response with the processed image or some other data
-        return HttpResponse("OK")
-
-    return JsonResponse({"message": "No image received"})
-
-@csrf_exempt
 def process_uploaded_image(request):
 
     if request.method == 'POST':
