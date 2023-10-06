@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-o0r2ji%*=$9obwzeq9cz3n59a^q74!=ryy2pb7nvky-le8ik!r
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'christophermarais-django-test.hf.space', 
+    'christophermarais-andrew-ai-bb-classification-beta.hf.space',
     '127.0.0.1',
 ]
 

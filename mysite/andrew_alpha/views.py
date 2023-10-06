@@ -14,7 +14,7 @@ def detect_objects(og_image_path):
     TEXT_PROMPT = "bug"
     BOX_TRESHOLD = 0.35
     TEXT_TRESHOLD = 0.25
-    DEVICE = 'cpu'
+    DEVICE = 'cuda'  # cuda or cpu
     MODEL_PATH = "./andrew_alpha/0_object_detection_model/GroundingDINO_SwinT_OGC.cfg.py"
     MODEL_CONFIG_PATH = "./andrew_alpha/0_object_detection_model/groundingdino_swint_ogc.pth"
     # MODEL_PATH = "./andrew_alpha/0_object_detection_model/GroundingDINO_SwinB.cfg.py"
@@ -34,14 +34,18 @@ def detect_objects(og_image_path):
         text_threshold=TEXT_TRESHOLD,
         device=DEVICE
     )
+    # replace phrases
+    na_phrase = ("OD score:-"*len(phrases)).split("-")
 
     annotated_frame = annotate(
         image_source=image_source,
         boxes=boxes,
         logits=logits,
-        phrases=phrases)
+        phrases=na_phrase)
     im_col = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
     od_image_obj = Image.fromarray(im_col, 'RGB')
+
+    # create a list of all the identified object images
 
     return od_image_obj
 
@@ -71,7 +75,6 @@ def process_uploaded_image(request):
 
         # Process image
         processed_img = detect_objects(og_image_path=image_path)
-        # processed_img = processed_img.rotate(180)
 
         # Save processed image to BytesIO in memory
         buffer = BytesIO()

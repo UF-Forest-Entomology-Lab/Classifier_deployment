@@ -24,3 +24,7 @@ To run the docker image on any machine.
 """
 docker run -it -p 7860:7860 --name andrew-alpha-container <docker_username>/andrew-alpha:latest
 """
+
+Make sure to install pytorch with the following to sue object detection on GPU:
+
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
