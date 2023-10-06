@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+import os
 import random
 import hashlib
 import cv2
@@ -94,11 +95,11 @@ def detect_objects(og_image_path):
     TEXT_PROMPT = "bug"
     BOX_TRESHOLD = 0.35
     TEXT_TRESHOLD = 0.25
-    DEVICE = 'cuda'  # cuda or cpu
-    MODEL_PATH = "/work/GroundingDINO_SwinT_OGC.cfg.py"
-    MODEL_CONFIG_PATH = "/work/groundingdino_swint_ogc.pth"
-    # MODEL_PATH = "./andrew_alpha/0_object_detection_model/GroundingDINO_SwinB.cfg.py"
-    # MODEL_CONFIG_PATH = "./andrew_alpha/0_object_detection_model/groundingdino_swinb_cogcoor.pth"
+    DEVICE = 'cpu'  # cuda or cpu
+    MODEL_PATH = "./mysite/andrew_alpha/0_object_detection_model/GroundingDINO_SwinT_OGC.cfg.py"
+    MODEL_CONFIG_PATH = "./mysite/andrew_alpha/0_object_detection_model/groundingdino_swint_ogc.pth"
+    # MODEL_PATH = "./mysite/andrew_alpha/0_object_detection_model/GroundingDINO_SwinB.cfg.py"
+    # MODEL_CONFIG_PATH = "./mysite/andrew_alpha/0_object_detection_model/groundingdino_swinb_cogcoor.pth"
 
     model = load_model(
         MODEL_PATH,
@@ -219,13 +220,15 @@ def process_uploaded_image(request):
 
         # hash the image for a unique name
         md5hash = hashlib.md5(processed_img.tobytes())
-        image_path = f"./andrew_alpha/2_submitted_images/{md5hash.hexdigest()}.png"
+        image_path = f"./mysite/andrew_alpha/2_submitted_images/{md5hash.hexdigest()}.png"
 
         # save uploaded image
         processed_img.save(image_path)
 
         # Process image
-        processed_img = detect_objects(og_image_path=image_path)
+        processed_img, result = bark_beetle_predict(
+            og_image_path=image_path
+            )
 
         # Save processed image to BytesIO in memory
         buffer = BytesIO()

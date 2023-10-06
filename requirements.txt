@@ -6,7 +6,7 @@ Pillow==10.0.1
 groundingdino-py==0.4.0
 opencv-contrib-python-headless==4.8.1.78
 huggingface_hub==0.16.4
-timm==0.9.7
+timm==0.8.17.dev0
 toml
 dill
 torchaudio
