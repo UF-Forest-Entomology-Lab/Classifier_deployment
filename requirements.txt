@@ -1,10 +1,20 @@
+fastai==2.7.12
 asgiref==3.7.2
 Django==4.2.5
 sqlparse==0.4.4
-tzdata==2023.3
 Pillow==10.0.1
 groundingdino-py==0.4.0
 opencv-contrib-python-headless==4.8.1.78
-torch==2.1.0+cu118
-torchaudio==2.1.0+cu118
-torchvision==0.16.0
+huggingface_hub==0.16.4
+timm==0.9.7
+toml
+dill
+torchaudio
+# torch==2.1.0
+# torchvision==0.15.2
+# timm==0.8.17.dev0
+# toml==0.10.2
+# dill==0.3.5.1
+# huggingface_hub==0.16.4
+
+# conda install -c fastchan fastai==2.7.12
