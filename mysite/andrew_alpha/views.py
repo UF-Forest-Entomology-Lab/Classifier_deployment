@@ -183,12 +183,13 @@ def bark_beetle_predict(og_image_path):
     max_class_lst = []
     for i in range(len(result)):
         temp_dict = result[i][1]
-        max_conf = max(temp_dict.values())
-        key_list = list(temp_dict.keys())
-        position = list(temp_dict.values()).index(max_conf)
-        max_class = key_list[position]
+        max_conf = list(temp_dict.values())[0]
+        # comment out before the first + to get only top candidate
+        max_class = list(temp_dict.keys())[0]
+        if max_class == "Unknown":
+            max_class = max_class+" ("+str(list(temp_dict.keys())[1])+"?)"
         max_conf_lst.append(float(max_conf))
-        max_class_lst.append(max_class)
+        max_class_lst.append(max_class) 
 
     # annotate image with classification results
     annotated_frame = annotate(
