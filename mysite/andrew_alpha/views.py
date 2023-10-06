@@ -39,7 +39,7 @@ def gaussian_blur(
 
 
 # load model
-learn = from_pretrained_fastai("ChristopherMarais/beetle-model")
+learn = from_pretrained_fastai("ChristopherMarais/beetle-model", )
 # learn = load_learner(
 #     hf_hub_download(
 #       'ChristopherMarais/Andrew_AI-BB_classification-beta',

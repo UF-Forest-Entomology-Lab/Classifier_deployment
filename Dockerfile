@@ -4,14 +4,17 @@
 # We Use an official Python runtime as a parent image
 FROM python:3.11.5
 
-# Allows docker to cache installed dependencies between builds
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
 # Mounts the application code to the image
 COPY . code
 WORKDIR /code
 RUN chmod -R 777 /code/mysite/
+RUN mkdir -p /code/mysite/hf_cache
+RUN chmod -R 777 /code/mysite/hf_cache/
+ENV HF_HOME=/code/mysite/hf_cache/
+
+# Allows docker to cache installed dependencies between builds
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 7860
 
